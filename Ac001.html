@@ -3,22 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Juego del Pozo de los Deseos</title>
+<title>El Pozo de los Deseos</title>
 <style>
   body {
-    background: radial-gradient(circle at center, #fceabb, #f8b500);
+    background: radial-gradient(circle at center, #fff8e1, #f8b500);
     font-family: "Poppins", sans-serif;
     text-align: center;
     padding: 20px;
     color: #3e2f00;
   }
+  h1 {
+    text-shadow: 0 0 10px #ffd700;
+  }
   .acertijo {
-    background: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.9);
     border-radius: 15px;
     padding: 20px;
     margin: 20px auto;
     width: 80%;
-    box-shadow: 0 0 20px rgba(255,215,0,0.6);
+    box-shadow: 0 0 25px rgba(255,215,0,0.6);
+    transition: 0.5s;
   }
   input {
     padding: 10px;
@@ -49,6 +53,11 @@
     margin-top: 30px;
     font-size: 1.2em;
     font-weight: bold;
+    background: rgba(255,255,255,0.85);
+    display: inline-block;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
   }
 </style>
 </head>
@@ -57,42 +66,43 @@
 <h1>💫 El Pozo de los Deseos 💫</h1>
 
 <div class="acertijo" id="acertijo1">
-  <p><strong>Acertijo 1:</strong><br>
-  “Sin boca hablo y sin oídos escucho. No tengo cuerpo, pero cobro vida con el viento. ¿Qué soy?”</p>
+  <p>“Sin boca hablo y sin oídos escucho. No tengo cuerpo, pero cobro vida con el viento. ¿Qué soy?”</p>
   <input type="text" id="respuesta1" placeholder="Escribe tu respuesta">
+  <br>
   <button onclick="verificar(1)">Responder</button>
   <button onclick="mostrarPista(1)">Pista</button>
-  <p class="pista" id="pista1a">Pista 1: Vive en las ondas.</p>
-  <p class="pista" id="pista1b">Pista 2: Puede viajar por el aire o el cable.</p>
-  <p class="pista" id="pista1c">Pista 3: Está en la radio o el teléfono.</p>
+  <p class="pista" id="pista1a">✨ Vive en las ondas.</p>
+  <p class="pista" id="pista1b">✨ Puede viajar por el aire o el cable.</p>
+  <p class="pista" id="pista1c">✨ Está en la radio o el teléfono.</p>
 </div>
 
 <div class="acertijo" id="acertijo4">
-  <p><strong>Acertijo 4:</strong><br>
-  “Guardo tus momentos más preciados, pero si me rompes, tus recuerdos quedan en pedazos. ¿Qué soy?”</p>
+  <p>“Guardo tus momentos más preciados, pero si me rompes, tus recuerdos quedan en pedazos. ¿Qué soy?”</p>
   <input type="text" id="respuesta4" placeholder="Escribe tu respuesta">
+  <br>
   <button onclick="verificar(4)">Responder</button>
   <button onclick="mostrarPista(4)">Pista</button>
-  <p class="pista" id="pista4a">Pista 1: Me cuelgan en la pared o me guardan en el teléfono.</p>
-  <p class="pista" id="pista4b">Pista 2: Capturo instantes.</p>
-  <p class="pista" id="pista4c">Pista 3: También me llaman retrato.</p>
+  <p class="pista" id="pista4a">✨ Me cuelgan en la pared o me guardan en el teléfono.</p>
+  <p class="pista" id="pista4b">✨ Capturo instantes.</p>
+  <p class="pista" id="pista4c">✨ También me llaman retrato.</p>
 </div>
 
 <div class="acertijo" id="acertijo5">
-  <p><strong>Acertijo 5:</strong><br>
-  “Cuanto más me quitas, más grande soy. ¿Qué soy?”</p>
+  <p>“Cuanto más me quitas, más grande soy. ¿Qué soy?”</p>
   <input type="text" id="respuesta5" placeholder="Escribe tu respuesta">
+  <br>
   <button onclick="verificar(5)">Responder</button>
   <button onclick="mostrarPista(5)">Pista</button>
-  <p class="pista" id="pista5a">Pista 1: Aparezco cuando hay ausencia.</p>
-  <p class="pista" id="pista5b">Pista 2: Puedes verme en una pared si la perforas.</p>
-  <p class="pista" id="pista5c">Pista 3: También me llaman hueco.</p>
+  <p class="pista" id="pista5a">✨ Aparezco cuando hay ausencia.</p>
+  <p class="pista" id="pista5b">✨ Puedes verme en una pared si la perforas.</p>
+  <p class="pista" id="pista5c">✨ También me llaman hueco.</p>
 </div>
 
 <div id="resultado"></div>
 
-<!-- 🎵 Sonido místico -->
-<audio id="sonido-exito" src="https://cdn.pixabay.com/audio/2022/03/15/audio_9976b8a3f4.mp3" preload="auto"></audio>
+<!-- 🔮 Sonidos -->
+<audio id="sonido-acierto" src="https://cdn.pixabay.com/audio/2022/03/15/audio_9976b8a3f4.mp3" preload="auto"></audio>
+<audio id="sonido-final" src="https://cdn.pixabay.com/audio/2023/06/12/audio_9c2b0f9e2b.mp3" preload="auto"></audio>
 
 <script>
 const respuestas = {
@@ -117,7 +127,7 @@ function verificar(num) {
   if (respuestas[num].includes(entrada)) {
     acertijosResueltos[num] = true;
     document.getElementById(`acertijo${num}`).style.border = "3px solid #00cc66";
-    const sonido = document.getElementById("sonido-exito");
+    const sonido = document.getElementById("sonido-acierto");
     sonido.play();
     verificarGanador();
   } else {
@@ -127,7 +137,10 @@ function verificar(num) {
 
 function verificarGanador() {
   if (Object.values(acertijosResueltos).every(v => v)) {
-    document.getElementById("resultado").innerHTML = "🌟✨ ¡Felicidades! Has resuelto todos los acertijos del Pozo Mágico. ✨🌟<br><br>Tu clave secreta es: <strong>PzMg0000001</strong>";
+    document.getElementById("resultado").innerHTML = 
+      "🌟✨ ¡Felicidades! Has resuelto todos los acertijos del Pozo Mágico. ✨🌟<br><br>Tu clave secreta es: <strong>PzMg0000001</strong>";
+    const sonidoFinal = document.getElementById("sonido-final");
+    sonidoFinal.play();
   }
 }
 </script>
