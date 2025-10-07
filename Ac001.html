@@ -113,6 +113,19 @@ const respuestas = {
 
 const pistasMostradas = {1: 0, 4: 0, 5: 0};
 let acertijosResueltos = {1: false, 4: false, 5: false};
+let audioHabilitado = false;
+
+function habilitarSonido() {
+  if (!audioHabilitado) {
+    const acierto = document.getElementById("sonido-acierto");
+    const final = document.getElementById("sonido-final");
+    // reproducir un fragmento muy corto para desbloquear
+    acierto.play().then(() => acierto.pause());
+    final.play().then(() => final.pause());
+    audioHabilitado = true;
+  }
+}
+document.addEventListener("click", habilitarSonido);
 
 function mostrarPista(num) {
   const total = 3;
@@ -127,8 +140,7 @@ function verificar(num) {
   if (respuestas[num].includes(entrada)) {
     acertijosResueltos[num] = true;
     document.getElementById(`acertijo${num}`).style.border = "3px solid #00cc66";
-    const sonido = document.getElementById("sonido-acierto");
-    sonido.play();
+    document.getElementById("sonido-acierto").play();
     verificarGanador();
   } else {
     alert("❌ Intenta otra vez. ¡Pide una pista!");
@@ -139,8 +151,7 @@ function verificarGanador() {
   if (Object.values(acertijosResueltos).every(v => v)) {
     document.getElementById("resultado").innerHTML = 
       "🌟✨ ¡Felicidades! Has resuelto todos los acertijos del Pozo Mágico. ✨🌟<br><br>Tu clave secreta es: <strong>PzMg0000001</strong>";
-    const sonidoFinal = document.getElementById("sonido-final");
-    sonidoFinal.play();
+    document.getElementById("sonido-final").play();
   }
 }
 </script>
