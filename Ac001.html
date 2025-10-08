@@ -1,160 +1,403 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>El Pozo de los Deseos</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pozo de los Deseos — Ritual</title>
 <style>
-  body {
-    background: radial-gradient(circle at center, #fff8e1, #f8b500);
-    font-family: "Poppins", sans-serif;
-    text-align: center;
-    padding: 20px;
-    color: #3e2f00;
+  :root{
+    --bg1:#0b0710; --bg2:#2b1b00; --gold:#d4af37; --muted:#cbbd9a;
+    --card: rgba(255,255,255,0.03);
   }
-  h1 {
-    text-shadow: 0 0 10px #ffd700;
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Inter,system-ui,Segoe UI,Arial;
+    color:#fff;
+    background: linear-gradient(180deg,var(--bg1) 0%, #1f1326 40%, #241207 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
   }
-  .acertijo {
-    background: rgba(255,255,255,0.9);
-    border-radius: 15px;
-    padding: 20px;
-    margin: 20px auto;
-    width: 80%;
-    box-shadow: 0 0 25px rgba(255,215,0,0.6);
-    transition: 0.5s;
-  }
-  input {
-    padding: 10px;
-    border-radius: 10px;
-    border: 2px solid #f8b500;
-    margin-top: 10px;
-  }
-  button {
-    padding: 10px 15px;
-    background-color: #f8b500;
-    border: none;
-    border-radius: 10px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  button:hover {
-    background-color: #ffcc00;
-  }
-  .pista {
-    display: none;
-    margin-top: 10px;
-    color: #3e2f00;
-    font-style: italic;
-  }
-  #resultado {
-    margin-top: 30px;
-    font-size: 1.2em;
-    font-weight: bold;
-    background: rgba(255,255,255,0.85);
-    display: inline-block;
-    padding: 15px;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
-  }
+  .wrap{width:100%;max-width:820px}
+  header{ text-align:center;margin-bottom:12px }
+  h1{margin:0;font-size:26px;color:var(--gold); text-shadow:0 6px 18px rgba(212,175,55,0.12)}
+  p.lead{margin:8px 0 20px;color:var(--muted)}
+  .topbar{display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:14px}
+  input[type=text]{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background: rgba(255,255,255,0.02); color:#fff;min-width:180px}
+  button{background:var(--gold);border:none;color:#111;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+  button.ghost{background:transparent;color:var(--gold);border:1px solid rgba(212,175,55,0.18)}
+  .board{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:18px;border-radius:14px; box-shadow:0 20px 40px rgba(0,0,0,0.6);border:1px solid rgba(212,175,55,0.05)}
+  .acertijo{padding:14px;border-radius:12px;background:var(--card);margin-bottom:12px;border:1px solid rgba(255,255,255,0.02)}
+  .acertijo p{margin:0 0 8px;font-size:16px}
+  .controls{display:flex;gap:8px;align-items:center;margin-top:8px}
+  .hint{display:none;margin-top:8px;color:var(--muted);font-style:italic}
+  .status{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:14px}
+  .timer{font-weight:700;color:var(--gold)}
+  .resultBox{display:none;margin-top:18px;padding:14px;border-radius:12px;background:rgba(255,255,255,0.03);text-align:center;border:1px solid rgba(212,175,55,0.06)}
+  .code{display:inline-block;margin-top:10px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg, rgba(212,175,55,0.12), rgba(255,255,255,0.02));color:var(--gold);font-weight:800}
+  /* Emergence animation */
+  .emergeWrap{position:fixed;left:0;right:0;bottom:0;top:0;pointer-events:none;display:flex;align-items:flex-end;justify-content:center;z-index:40}
+  .emerge{pointer-events:auto;transform:translateY(30vh) scale(.8);opacity:0;animation:rise 1s ease-out forwards}
+  @keyframes rise{to{transform:translateY(0) scale(1);opacity:1}}
+  /* golden sparkles */
+  .sparkles{position:fixed;left:0;right:0;top:0;bottom:0;pointer-events:none;z-index:30;background:
+    radial-gradient(circle at 20% 10%, rgba(212,175,55,0.06) 0 2px, transparent 3px),
+    radial-gradient(circle at 80% 30%, rgba(212,175,55,0.04) 0 2px, transparent 3px),
+    radial-gradient(circle at 50% 85%, rgba(212,175,55,0.03) 0 2px, transparent 3px);
+    mix-blend-mode:screen;opacity:.9;filter:blur(.6px)}
+  /* small glow */
+  .glow{box-shadow:0 8px 30px rgba(212,175,55,0.12); border:1px solid rgba(212,175,55,0.06)}
+  .mutedSmall{color:var(--muted);font-size:13px}
+  @media(max-width:600px){ .topbar{flex-direction:column} input[type=text]{width:100%} }
 </style>
 </head>
 <body>
+  <div class="wrap">
+    <header>
+      <h1>Pozo de los Deseos</h1>
+      <p class="lead">Resuelve los acertijos del ritual. Dispones de 10 minutos. Si aciertas los 3, el Pozo revelará tu clave.</p>
+    </header>
 
-<h1>💫 El Pozo de los Deseos 💫</h1>
+    <div class="topbar">
+      <input id="playerName" placeholder="Nombre del jugador (ej. Ana)">
+      <button id="startBtn">Comenzar ritual</button>
+    </div>
 
-<div class="acertijo" id="acertijo1">
-  <p>“Sin boca hablo y sin oídos escucho. No tengo cuerpo, pero cobro vida con el viento. ¿Qué soy?”</p>
-  <input type="text" id="respuesta1" placeholder="Escribe tu respuesta">
-  <br>
-  <button onclick="verificar(1)">Responder</button>
-  <button onclick="mostrarPista(1)">Pista</button>
-  <p class="pista" id="pista1a">✨ Vive en las ondas.</p>
-  <p class="pista" id="pista1b">✨ Puede viajar por el aire o el cable.</p>
-  <p class="pista" id="pista1c">✨ Está en la radio o el teléfono.</p>
-</div>
+    <div class="board" id="board" style="display:none">
+      <!-- acertijos -->
+      <div class="acertijo" id="cardA">
+        <p id="qA">"No tengo voz, pero puedo contarte historias de mundos lejanos. ¿Qué soy?"</p>
+        <input id="ansA" placeholder="Escribe tu respuesta" />
+        <div class="controls">
+          <button id="subA">Responder</button>
+          <button class="ghost" id="hintA">Pista</button>
+        </div>
+        <div class="hint" id="A1">✨ Vive en páginas o archivos.</div>
+        <div class="hint" id="A2">✨ Contiene relatos, letras y conocimiento.</div>
+        <div class="hint" id="A3">✨ Lo abres para viajar sin moverte.</div>
+      </div>
 
-<div class="acertijo" id="acertijo4">
-  <p>“Guardo tus momentos más preciados, pero si me rompes, tus recuerdos quedan en pedazos. ¿Qué soy?”</p>
-  <input type="text" id="respuesta4" placeholder="Escribe tu respuesta">
-  <br>
-  <button onclick="verificar(4)">Responder</button>
-  <button onclick="mostrarPista(4)">Pista</button>
-  <p class="pista" id="pista4a">✨ Me cuelgan en la pared o me guardan en el teléfono.</p>
-  <p class="pista" id="pista4b">✨ Capturo instantes.</p>
-  <p class="pista" id="pista4c">✨ También me llaman retrato.</p>
-</div>
+      <div class="acertijo" id="cardB">
+        <p id="qB">"Me miras y ves tu reflejo, pero no soy agua ni cristal del cielo. ¿Qué soy?"</p>
+        <input id="ansB" placeholder="Escribe tu respuesta" />
+        <div class="controls">
+          <button id="subB">Responder</button>
+          <button class="ghost" id="hintB">Pista</button>
+        </div>
+        <div class="hint" id="B1">✨ Aparezco en tu cuarto o en la pared.</div>
+        <div class="hint" id="B2">✨ Devuelvo la imagen de lo que miras.</div>
+        <div class="hint" id="B3">✨ A veces me limpias con un paño.</div>
+      </div>
 
-<div class="acertijo" id="acertijo5">
-  <p>“Cuanto más me quitas, más grande soy. ¿Qué soy?”</p>
-  <input type="text" id="respuesta5" placeholder="Escribe tu respuesta">
-  <br>
-  <button onclick="verificar(5)">Responder</button>
-  <button onclick="mostrarPista(5)">Pista</button>
-  <p class="pista" id="pista5a">✨ Aparezco cuando hay ausencia.</p>
-  <p class="pista" id="pista5b">✨ Puedes verme en una pared si la perforas.</p>
-  <p class="pista" id="pista5c">✨ También me llaman hueco.</p>
-</div>
+      <div class="acertijo" id="cardC">
+        <p id="qC">"Nazco en la noche, muero al amanecer, y aunque brillo, no soy el sol. ¿Qué soy?"</p>
+        <input id="ansC" placeholder="Escribe tu respuesta" />
+        <div class="controls">
+          <button id="subC">Responder</button>
+          <button class="ghost" id="hintC">Pista</button>
+        </div>
+        <div class="hint" id="C1">✨ Me ves cuando la oscuridad reina.</div>
+        <div class="hint" id="C2">✨ A veces guío a los viajeros.</div>
+        <div class="hint" id="C3">✨ Soy un punto de luz lejano.</div>
+      </div>
 
-<div id="resultado"></div>
+      <div class="status">
+        <div class="mutedSmall">Progreso: <span id="progress">0 / 3</span></div>
+        <div class="mutedSmall">Tiempo restante: <span class="timer" id="timer">10:00</span></div>
+      </div>
 
-<!-- 🔮 Sonidos -->
-<audio id="sonido-acierto" src="https://cdn.pixabay.com/audio/2022/03/15/audio_9976b8a3f4.mp3" preload="auto"></audio>
-<audio id="sonido-final" src="https://cdn.pixabay.com/audio/2023/06/12/audio_9c2b0f9e2b.mp3" preload="auto"></audio>
+      <div class="resultBox" id="resultBox">
+        <div id="resultText" style="font-size:18px;font-weight:700"></div>
+        <div id="finalMsg" style="margin-top:10px"></div>
+        <div id="showCode" style="margin-top:12px;display:none"><span class="code">PzMg0000001</span></div>
+        <div style="margin-top:12px"><button id="restart" class="ghost">Intentar otro ritual</button></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- sparkle overlay -->
+  <div class="sparkles" aria-hidden="true"></div>
+
+  <!-- emergence container (for animated message) -->
+  <div class="emergeWrap" id="emergeWrap" aria-hidden="true"></div>
+
+  <!-- audios -->
+  <!-- short chime for correct (will be used as soft chime) -->
+  <audio id="s_chime" src="https://cdn.pixabay.com/audio/2022/03/15/audio_9976b8a3f4.mp3" preload="auto"></audio>
+  <!-- deep aura for final -->
+  <audio id="s_final" src="https://cdn.pixabay.com/audio/2023/06/12/audio_9c2b0f9e2b.mp3" preload="auto"></audio>
 
 <script>
-const respuestas = {
-  1: ["eco", "reverberación", "resonancia"],
-  4: ["foto", "fotografía", "imagen", "retrato"],
-  5: ["agujero", "hueco", "vacío"]
+/* ----- configuración de puzzles y sinónimos ----- */
+const puzzles = [
+  { id:'A', answers: ['libro','texto','historia','lectura','libros','cuento','novela'] },
+  { id:'B', answers: ['espejo','reflejo','vidrio','imagen','espejos'] },
+  { id:'C', answers: ['estrella','astro','lucero','brillo','lucero','estrellas'] }
+];
+
+let state = {
+  started:false,
+  startTime:0,
+  elapsed:0,
+  timerInterval:null,
+  solved: {A:false,B:false,C:false},
+  hintsShown: {A:0,B:0,C:0}
 };
 
-const pistasMostradas = {1: 0, 4: 0, 5: 0};
-let acertijosResueltos = {1: false, 4: false, 5: false};
-let audioHabilitado = false;
+const LIMIT = 600; // 10 minutos in seconds
+const FAST_LIMIT = 180; // 3 minutes threshold
 
-function habilitarSonido() {
-  if (!audioHabilitado) {
-    const acierto = document.getElementById("sonido-acierto");
-    const final = document.getElementById("sonido-final");
-    // reproducir un fragmento muy corto para desbloquear
-    acierto.play().then(() => acierto.pause());
-    final.play().then(() => final.pause());
-    audioHabilitado = true;
-  }
+/* elementos */
+const startBtn = document.getElementById('startBtn');
+const playerName = document.getElementById('playerName');
+const board = document.getElementById('board');
+const timerEl = document.getElementById('timer');
+const progressEl = document.getElementById('progress');
+const resultBox = document.getElementById('resultBox');
+const resultText = document.getElementById('resultText');
+const showCode = document.getElementById('showCode');
+const finalMsg = document.getElementById('finalMsg');
+const restartBtn = document.getElementById('restart');
+const emergeWrap = document.getElementById('emergeWrap');
+
+const audioChime = document.getElementById('s_chime');
+const audioFinal = document.getElementById('s_final');
+
+/* bloqueo por localStorage */
+const PLAYED_KEY = 'pozo_played_v1';
+const CLOSED_KEY = 'pozo_closed_v1';
+
+/* comprobar bloqueo */
+if(localStorage.getItem(CLOSED_KEY) === 'true' || localStorage.getItem(PLAYED_KEY) === 'true'){
+  // página muestra mensaje bloqueado
+  document.body.innerHTML = `
+    <div style="padding:30px;max-width:700px;margin:40px auto;background:rgba(0,0,0,0.45);border-radius:12px;text-align:center;color:#fff">
+      <h2 style="color:${getComputedStyle(document.documentElement).getPropertyValue('--gold')||'#d4af37'}">El Pozo está cerrado</h2>
+      <p style="color:#cfc2a1">Has participado antes o el tiempo de ritual ha terminado. Gracias por tu interés.</p>
+    </div>`;
 }
-document.addEventListener("click", habilitarSonido);
 
-function mostrarPista(num) {
+/* función para normalizar texto (sin acentos) */
+function normalize(s){
+  return String(s||'').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,'').trim();
+}
+
+/* desbloquear audio al primer clic (compatible móviles) */
+let audioUnlocked=false;
+function unlockAudioOnce(){
+  if(audioUnlocked) return;
+  // intentar reproducir y pausar para desbloquear
+  audioChime.play().then(()=>{ audioChime.pause(); audioChime.currentTime=0; }).catch(()=>{});
+  audioFinal.play().then(()=>{ audioFinal.pause(); audioFinal.currentTime=0; }).catch(()=>{});
+  audioUnlocked = true;
+  document.removeEventListener('click', unlockAudioOnce);
+}
+document.addEventListener('click', unlockAudioOnce);
+
+/* helpers UI */
+function formatTime(sec){
+  if(sec<0) sec=0;
+  const m = Math.floor(sec/60).toString().padStart(2,'0');
+  const s = Math.floor(sec%60).toString().padStart(2,'0');
+  return `${m}:${s}`;
+}
+function updateProgress(){
+  const solvedCount = Object.values(state.solved).filter(v=>v).length;
+  progressEl.textContent = `${solvedCount} / 3`;
+}
+
+/* timer */
+function startTimer(){
+  state.startTime = Date.now();
+  state.timerInterval = setInterval(()=>{
+    state.elapsed = Math.floor((Date.now() - state.startTime)/1000);
+    const remaining = LIMIT - state.elapsed;
+    timerEl.textContent = formatTime(remaining);
+    if(remaining <= 0){
+      clearInterval(state.timerInterval);
+      onTimeout();
+    }
+  }, 300);
+}
+
+/* timeout behavior */
+function onTimeout(){
+  // mark closed and block future entries
+  localStorage.setItem(CLOSED_KEY,'true');
+  // show closed message and play soft echo (use slow playback)
+  playEcho();
+  resultBox.style.display='block';
+  resultText.textContent = "El tiempo ha terminado.";
+  finalMsg.textContent = "";
+  showCode.style.display='none';
+  // disable inputs and buttons
+  disableAllInputs();
+}
+
+/* disable UI inputs when closed or finished */
+function disableAllInputs(){
+  document.querySelectorAll('input, button').forEach(el=>{
+    el.disabled = true;
+    el.style.opacity = '0.85';
+  });
+}
+
+/* enable only restart to clear local localStorage if desired (we'll show ghost restart but not clear play flag) */
+function enableRestart(){
+  restartBtn.disabled = false;
+  restartBtn.classList.remove('ghost');
+}
+
+/* play soft echo for timeout (slowed chime) */
+function playEcho(){
+  try{
+    audioChime.play().then(()=>{
+      // slow playback for echo effect
+      audioChime.playbackRate = 0.7;
+    }).catch(()=>{});
+  }catch(e){}
+}
+
+/* play final deep aura */
+function playFinal(){
+  try{
+    audioFinal.playbackRate = 1;
+    audioFinal.play().catch(()=>{});
+  }catch(e){}
+}
+
+/* emergence animation for message with golden sparkles */
+function showEmergentMessage(lines, callback){
+  emergeWrap.innerHTML = '';
+  const box = document.createElement('div');
+  box.className = 'emerge glow';
+  box.style.background = 'linear-gradient(180deg, rgba(255,248,230,0.96), rgba(255,245,208,0.9))';
+  box.style.padding = '18px 22px';
+  box.style.borderRadius = '12px';
+  box.style.textAlign = 'center';
+  box.style.maxWidth = '86%';
+  box.style.boxShadow = '0 20px 60px rgba(0,0,0,0.6)';
+  box.innerHTML = lines.map(l=>`<div style="color:#2b1600;font-size:18px;margin:6px 0">${l}</div>`).join('') +
+                  `<div style="margin-top:10px;color:${getComputedStyle(document.documentElement).getPropertyValue('--gold')||'#d4af37'};font-weight:800;font-size:20px">PzMg0000001</div>`;
+  emergeWrap.appendChild(box);
+  // small sparkle particles (temporary)
+  setTimeout(()=>{ if(typeof callback==='function') callback(); }, 1400);
+}
+
+/* check answer helper */
+function checkAnswer(id, value){
+  const p = puzzles.find(x=>x.id===id);
+  if(!p) return false;
+  const norm = normalize(value);
+  return p.answers.some(a => normalize(a) === norm);
+}
+
+/* events for each card */
+document.getElementById('subA').addEventListener('click', ()=> handleSubmit('A','ansA','cardA'));
+document.getElementById('subB').addEventListener('click', ()=> handleSubmit('B','ansB','cardB'));
+document.getElementById('subC').addEventListener('click', ()=> handleSubmit('C','ansC','cardC'));
+
+document.getElementById('hintA').addEventListener('click', ()=> showHint('A'));
+document.getElementById('hintB').addEventListener('click', ()=> showHint('B'));
+document.getElementById('hintC').addEventListener('click', ()=> showHint('C'));
+
+/* start button */
+startBtn.addEventListener('click', ()=>{
+  // prevent if closed or played
+  if(localStorage.getItem(CLOSED_KEY) === 'true' || localStorage.getItem(PLAYED_KEY) === 'true'){
+    alert('El Pozo está cerrado o ya participaste anteriormente.');
+    return;
+  }
+  const name = (playerName.value||'Jugador').trim();
+  playerName.disabled = true;
+  startBtn.disabled = true;
+  board.style.display = 'block';
+  state.started = true;
+  // set played flag (prevent immediate replays in same device)
+  localStorage.setItem(PLAYED_KEY,'true');
+  startTimer();
+});
+
+/* hint logic */
+function showHint(id){
+  if(!state.started) return;
+  const k = state.hintsShown[id] || 0;
   const total = 3;
-  if (pistasMostradas[num] < total) {
-    pistasMostradas[num]++;
-    document.getElementById(`pista${num}${String.fromCharCode(96 + pistasMostradas[num])}`).style.display = "block";
-  }
-}
-
-function verificar(num) {
-  const entrada = document.getElementById(`respuesta${num}`).value.trim().toLowerCase();
-  if (respuestas[num].includes(entrada)) {
-    acertijosResueltos[num] = true;
-    document.getElementById(`acertijo${num}`).style.border = "3px solid #00cc66";
-    document.getElementById("sonido-acierto").play();
-    verificarGanador();
+  if(k < total){
+    state.hintsShown[id] = k+1;
+    document.getElementById(`${id}${k+1}`).style.display = 'block';
   } else {
-    alert("❌ Intenta otra vez. ¡Pide una pista!");
+    // no more hints
+    alert('No hay más pistas para este acertijo.');
   }
 }
 
-function verificarGanador() {
-  if (Object.values(acertijosResueltos).every(v => v)) {
-    document.getElementById("resultado").innerHTML = 
-      "🌟✨ ¡Felicidades! Has resuelto todos los acertijos del Pozo Mágico. ✨🌟<br><br>Tu clave secreta es: <strong>PzMg0000001</strong>";
-    document.getElementById("sonido-final").play();
+/* handle submit */
+function handleSubmit(id, inputId, cardId){
+  if(!state.started) return;
+  const val = document.getElementById(inputId).value;
+  if(!val || val.trim()===''){ alert('Escribe una respuesta antes.'); return; }
+  if(checkAnswer(id,val)){
+    // mark solved
+    state.solved[id] = true;
+    document.getElementById(cardId).style.border = '2px solid rgba(100,255,180,0.12)';
+    // play chime
+    audioChime.currentTime = 0;
+    audioChime.play().catch(()=>{});
+    updateProgress();
+    // disable that card's inputs
+    document.getElementById(inputId).disabled = true;
+    document.getElementById('sub'+id).disabled = true;
+    document.getElementById('hint'+id).disabled = true;
+    // check win
+    if(Object.values(state.solved).every(v=>v)){
+      onWin();
+    }
+  } else {
+    alert('❌ Respuesta no válida. Intenta otra vez o pide una pista.');
   }
 }
+
+/* on win */
+function onWin(){
+  clearInterval(state.timerInterval);
+  const totalElapsed = Math.floor((Date.now()-state.startTime)/1000);
+  // determine fast or slow
+  const fast = totalElapsed <= FAST_LIMIT;
+  // message lines
+  const lines = fast
+    ? ['Tu agilidad mental te hace imparable.']
+    : ['Tu astucia te da una gran creatividad, no la limites y recuerda without harm to anyone.'];
+
+  // show emergent animated message
+  showEmergentMessage(lines, ()=>{});
+  // play final aura
+  audioFinal.currentTime = 0;
+  audioFinal.play().catch(()=>{});
+  // show result box after short delay
+  setTimeout(()=>{
+    resultBox.style.display='block';
+    resultText.textContent = fast ? '✨ Tu rapidez ha sido brillante.' : '✨ Tu astucia ha sido notoria.';
+    finalMsg.innerHTML = lines.map(l=>`<div style="color:${getComputedStyle(document.documentElement).getPropertyValue('--gold')||'#d4af37'}">${l}</div>`).join('');
+    showCode.style.display='block';
+    disableAllInputs();
+    // mark played (already set) and ensure closed as well so they cannot re-enter
+    localStorage.setItem(CLOSED_KEY,'true');
+  }, 1400);
+}
+
+/* restart button simply reloads (won't allow play if closed) */
+restartBtn.addEventListener('click', ()=>{
+  location.reload();
+});
+
+/* update progress initial */
+updateProgress();
+
 </script>
-
 </body>
 </html>
